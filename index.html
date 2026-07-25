@@ -406,7 +406,6 @@
 // ── DISHES ARE STORED HERE ── edit between the brackets to hardcode dishes
 const HARDCODED = [
   { id: 1,  name: "Ukrainian Borscht",                    emoji: "🍲", photo: "photos/borscht.png",              cat: "Other", desc: "" },
-  { id: 12, name: "Italian Carbonara",                    emoji: "🍝", photo: "photos/carbonara.jpg",            cat: "Other", desc: "" },
   { id: 7,  name: "Mediterranean salad",                  emoji: "🥗", photo: "photos/mediterraneansalad.jpg",   cat: "Other", desc: "" },
   { id: 4,  name: "Burrata with Parma ham",               emoji: "🧀", photo: "photos/burrata.jpg",              cat: "Other", desc: "" },
   { id: 9,  name: "Shakshouka",                           emoji: "🍳", photo: "photos/shakshuka.jpg",            cat: "Other", desc: "" },
@@ -415,6 +414,7 @@ const HARDCODED = [
   { id: 16, name: "Japanese daikon mushroom soup",        emoji: "🍜", photo: "photos/japanesesoup.jpg",         cat: "Other", desc: "" },
   { id: 13, name: "Salsiccia bean stew",                  emoji: "🍖", photo: "photos/salsiccia.jpg",            cat: "Other", desc: "" },
   { id: 3,  name: "Baked sweet potato with tuna",         emoji: "🍠", photo: "photos/bakedpotato.jpg",          cat: "Other", desc: "" },
+  { id: 12, name: "Italian Carbonara",                    emoji: "🍝", photo: "photos/carbonaravid.mp4",         cat: "Other", desc: "" },
   { id: 6,  name: "Pumpkin curry",                        emoji: "🎃", photo: "photos/pumpkincurry.jpg",         cat: "Other", desc: "" },
   { id: 19, name: "Chicken caesar salad",                 emoji: "🥗", photo: "photos/chickencaesarsalad.jpg",   cat: "Other", desc: "" },
   { id: 8,  name: "Lemon and olive chicken tajine",       emoji: "🍋", photo: "photos/lemonolivestajin.jpg",     cat: "Other", desc: "" },
@@ -433,6 +433,7 @@ const HARDCODED = [
   { id: 10, name: "Potato dahl",                          emoji: "🫘", photo: "photos/potatodahl.jpg",           cat: "Other", desc: "" },
   { id: 26, name: "Oven stir-fry with shrimp",            emoji: "🍤", photo: "photos/ovenstirfry.jpg",          cat: "Other", desc: "" },
   { id: 29, name: "Roasted tomato and bell pepper soup",  emoji: "🫑", photo: "photos/tomatosoup.jpg",           cat: "Other", desc: "" },
+  { id: 37, name: "Chicken mushroom buckwheat stew",      emoji: "🍄", photo: "photos/buckwheatstew.jpg",        cat: "Other", desc: "" },
   { id: 24, name: "Chilli con carne",                     emoji: "🌶️", photo: "photos/chilli.jpg",              cat: "Other", desc: "" },
   { id: 32, name: "Slavic potato pickle salad",           emoji: "🥗", photo: "photos/potatosalad.jpeg",         cat: "Other", desc: "" },
   { id: 27, name: "Slavic potato pancakes",               emoji: "🥞", photo: "photos/potatopancakes.jpg",       cat: "Other", desc: "" },
@@ -441,7 +442,6 @@ const HARDCODED = [
   { id: 33, name: "Falafel",                              emoji: "🧆", photo: "photos/falafel.jpg",              cat: "Other", desc: "" },
   { id: 34, name: "Granola",                              emoji: "🌾", photo: "photos/granola.jpg",              cat: "Other", desc: "" },
   { id: 36, name: "Bone broth",                           emoji: "🍵", photo: "photos/bonebroth.jpg",            cat: "Other", desc: "" },
-  { id: 37, name: "Chicken mushroom buckwheat stew",      emoji: "🍄", photo: "photos/buckwheatstew.jpg",        cat: "Other", desc: "" },
   { id: 38, name: "Chestnut soup",                        emoji: "🌰", photo: "photos/chestnut.jpg",             cat: "Other", desc: "" },
   { id: 39, name: "Dino nuggets",                         emoji: "🦕", photo: "photos/dinonuggets.jpg",          cat: "Other", desc: "" },
   { id: 40, name: "Nachos",                               emoji: "🧀", photo: "photos/nachos.jpg",               cat: "Other", desc: "" },
@@ -468,13 +468,15 @@ function renderGrid() {
     const unavail = d.desc === 'unavailable';
     return `<div class="dish-card ${unavail?'unavailable':''}" data-id="${d.id}" style="opacity:0; animation: cardFadeIn 0.6s ease forwards ${0.9 + 0.04 * idx}s;">
       <div class="dish-check"><svg viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg></div>
-      ${d.photo
-        ? `<img class="dish-photo" src="${d.photo}" alt="" onerror="
-            var alt = this.src.endsWith('.jpg') ? this.src.replace('.jpg','.jpeg') : this.src.replace('.jpeg','.jpg');
-            if (!this.dataset.tried) { this.dataset.tried='1'; this.src=alt; }
-            else { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
-           <div class="dish-photo-placeholder" style="display:none; pointer-events:none;"></div>`
-        : `<div class="dish-photo-placeholder" style="pointer-events:none;"></div>`}
+      ${d.photo && d.photo.endsWith('.mp4')
+        ? `<video class="dish-photo" src="${d.photo}" autoplay loop muted playsinline style="pointer-events:none;"></video>`
+        : d.photo
+          ? `<img class="dish-photo" src="${d.photo}" alt="" onerror="
+              var alt = this.src.endsWith('.jpg') ? this.src.replace('.jpg','.jpeg') : this.src.replace('.jpeg','.jpg');
+              if (!this.dataset.tried) { this.dataset.tried='1'; this.src=alt; }
+              else { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
+             <div class="dish-photo-placeholder" style="display:none; pointer-events:none;"></div>`
+          : `<div class="dish-photo-placeholder" style="pointer-events:none;"></div>`}
       ${unavail
         ? `<div class="dish-overlay" style="background:rgba(40,25,55,0.72);flex-direction:column;align-items:center;justify-content:center;gap:6px;">
              <div class="dish-name" style="text-align:center;">${d.name}</div>
