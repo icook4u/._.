@@ -532,8 +532,21 @@ function renderAdmin() {
 }
 
 function selectDish(id) {
-  selectedId = id;
-  confirmPick();
+  const isMobile = window.innerWidth <= 768;
+  if (isMobile) {
+    if (selectedId === id) {
+      confirmPick();
+    } else {
+      selectedId = id;
+      document.querySelectorAll('.dish-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.dish-card').forEach(c => {
+        if (Number(c.dataset.id) === id) c.classList.add('selected');
+      });
+    }
+  } else {
+    selectedId = id;
+    confirmPick();
+  }
 }
 
 function spawnHearts() {
@@ -571,9 +584,13 @@ function confirmPick() {
   document.getElementById('confirm-name').textContent = dish.name;
   document.getElementById('confirm-desc').textContent = dish.desc === 'unavailable' ? '' : (dish.desc||'');
   const wrap = document.getElementById('confirm-img-wrap');
-  wrap.innerHTML = dish.photo
-    ? `<img class="confirm-photo" src="${dish.photo}" alt="${dish.name}">`
-    : `<div class="confirm-photo-placeholder">${dish.emoji||'🍽️'}</div>`;
+  if (dish.photo && dish.photo.endsWith('.mp4')) {
+    wrap.innerHTML = `<video class="confirm-photo" src="${dish.photo}" autoplay loop muted playsinline style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;"></video>`;
+  } else {
+    wrap.innerHTML = dish.photo
+      ? `<img class="confirm-photo" src="${dish.photo}" alt="${dish.name}">`
+      : `<div class="confirm-photo-placeholder">${dish.emoji||'🍽️'}</div>`;
+  }
   const msg = encodeURIComponent(`🍽️ I'd love to eat: ${dish.name}`);
   const waBtn = document.getElementById('whatsapp-btn');
   waBtn.href = `https://wa.me/491724382147?text=${msg}`;
