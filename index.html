@@ -484,8 +484,7 @@ function renderGrid() {
 
   el.querySelectorAll('.dish-card:not(.unavailable)').forEach(card => {
     card.addEventListener('click', () => {
-      selectedId = Number(card.dataset.id);
-      confirmPick();
+      selectDish(Number(card.dataset.id));
     });
   });
 
