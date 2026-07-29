@@ -250,12 +250,8 @@
     header { padding: 1.25rem; } main { padding: 1.25rem; }
     .logo { font-size: 2.2rem; }
     .dishes-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .dish-card:nth-child(6n+1) { height: 200px; }
-    .dish-card:nth-child(6n+2) { height: 150px; }
-    .dish-card:nth-child(6n+3) { height: 170px; }
-    .dish-card:nth-child(6n+4) { height: 160px; }
-    .dish-card:nth-child(6n+5) { height: 190px; }
-    .dish-card:nth-child(6n+6) { height: 155px; }
+    .dish-card.selected .dish-overlay { opacity: 1 !important; background: linear-gradient(to top, rgba(120,70,180,0.9) 0%, rgba(120,70,180,0.3) 60%, transparent 80%) !important; }
+    .dish-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
     .form-grid { grid-template-columns: 1fr; }
     .lock-screen { flex-direction: column; justify-content: center; align-items: center; padding: 2rem 1.5rem; gap: 1.5rem; }
     .lock-card { max-width: 100%; padding: 1.5rem 1.25rem; }
