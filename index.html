@@ -430,7 +430,7 @@ const HARDCODED = [
   { id: 26, name: "Oven stir-fry with shrimp",            emoji: "🍤", photo: "photos/ovenstirfry.jpg",          cat: "Other", desc: "" },
   { id: 29, name: "Roasted tomato and bell pepper soup",  emoji: "🫑", photo: "photos/tomatosoup.jpg",           cat: "Other", desc: "" },
   { id: 37, name: "Chicken mushroom buckwheat stew",      emoji: "🍄", photo: "photos/buckwheatstew.jpg",        cat: "Other", desc: "" },
-  { id: 24, name: "Chilli con carne",                     emoji: "🌶️", photo: "photos/chilli.jpg",              cat: "Other", desc: "" },
+  { id: 24, name: "Chilli con carne",                     emoji: "🌶", photo: "photos/chilli.jpg",              cat: "Other", desc: "" },
   { id: 32, name: "Slavic potato pickle salad",           emoji: "🥗", photo: "photos/potatosalad.jpeg",         cat: "Other", desc: "" },
   { id: 27, name: "Slavic potato pancakes",               emoji: "🥞", photo: "photos/potatopancakes.jpg",       cat: "Other", desc: "" },
   { id: 22, name: "Focaccia",                             emoji: "🍞", photo: "photos/foccacia.jpg",             cat: "Other", desc: "" },
@@ -445,10 +445,6 @@ const HARDCODED = [
   { id: 42, name: "Sourdough bread",                      emoji: "🍞", photo: "photos/bread.jpg",                cat: "Other", desc: "unavailable" }
 ];
 
-let dishes = HARDCODED.length ? [...HARDCODED] : loadFromStorage();
-let selectedId = null;
-let editingId = null;
-
 function loadFromStorage() {
   try { const s = localStorage.getItem('icook4u_v3'); return s ? JSON.parse(s) : []; }
   catch { return []; }
@@ -456,6 +452,10 @@ function loadFromStorage() {
 function saveToStorage() {
   try { localStorage.setItem('icook4u_v3', JSON.stringify(dishes)); } catch {}
 }
+
+let dishes = HARDCODED.length ? [...HARDCODED] : loadFromStorage();
+let selectedId = null;
+let editingId = null;
 
 function renderGrid() {
   const el = document.getElementById('dishes-grid');
@@ -531,8 +531,10 @@ function selectDish(id) {
   const isMobile = window.innerWidth <= 768;
   if (isMobile) {
     if (selectedId === id) {
+      // Second tap — confirm
       confirmPick();
     } else {
+      // First tap — show name
       selectedId = id;
       document.querySelectorAll('.dish-card').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('.dish-card').forEach(c => {
@@ -543,6 +545,43 @@ function selectDish(id) {
     selectedId = id;
     confirmPick();
   }
+}
+
+function confirmPick() {
+  const dish = dishes.find(d => d.id === selectedId);
+  if (!dish) return;
+  document.getElementById('confirm-name').textContent = dish.name;
+  document.getElementById('confirm-desc').textContent = dish.desc === 'unavailable' ? '' : (dish.desc||'');
+  const wrap = document.getElementById('confirm-img-wrap');
+  if (dish.photo && dish.photo.endsWith('.mp4')) {
+    wrap.innerHTML = `<video class="confirm-photo" src="${dish.photo}" autoplay loop muted playsinline style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;"></video>`;
+  } else if (dish.photo) {
+    const img = document.createElement('img');
+    img.className = 'confirm-photo';
+    img.alt = dish.name;
+    img.src = dish.photo;
+    img.onerror = function() {
+      const alt = img.src.endsWith('.jpg') ? img.src.replace('.jpg','.jpeg') : img.src.replace('.jpeg','.jpg');
+      if (!img.dataset.tried) { img.dataset.tried = '1'; img.src = alt; }
+      else { wrap.innerHTML = `<div class="confirm-photo-placeholder">${dish.emoji||'🍽️'}</div>`; }
+    };
+    wrap.innerHTML = '';
+    wrap.appendChild(img);
+  } else {
+    wrap.innerHTML = `<div class="confirm-photo-placeholder">${dish.emoji||'🍽️'}</div>`;
+  }
+  const msg = encodeURIComponent(`🍽️ I'd love to eat: ${dish.name}`);
+  const waBtn = document.getElementById('whatsapp-btn');
+  waBtn.href = `https://wa.me/491724382147?text=${msg}`;
+  const sentEl = document.getElementById('sent-message');
+  sentEl.style.display = 'none';
+  sentEl.textContent = '';
+  waBtn.onclick = () => {
+    setTimeout(() => { spawnHearts(); typewriter(sentEl, "alrighty I'll make it with love 😘🤌✨", 45); }, 300);
+  };
+  document.getElementById('confirm-bar').classList.remove('show');
+  showView('confirm');
+  setTimeout(spawnHearts, 400);
 }
 
 function spawnHearts() {
@@ -572,33 +611,6 @@ function typewriter(el, text, speed = 40) {
     i++;
     if (i >= text.length) clearInterval(iv);
   }, speed);
-}
-
-function confirmPick() {
-  const dish = dishes.find(d => d.id === selectedId);
-  if (!dish) return;
-  document.getElementById('confirm-name').textContent = dish.name;
-  document.getElementById('confirm-desc').textContent = dish.desc === 'unavailable' ? '' : (dish.desc||'');
-  const wrap = document.getElementById('confirm-img-wrap');
-  if (dish.photo && dish.photo.endsWith('.mp4')) {
-    wrap.innerHTML = `<video class="confirm-photo" src="${dish.photo}" autoplay loop muted playsinline style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;"></video>`;
-  } else {
-    wrap.innerHTML = dish.photo
-      ? `<img class="confirm-photo" src="${dish.photo}" alt="${dish.name}">`
-      : `<div class="confirm-photo-placeholder">${dish.emoji||'🍽️'}</div>`;
-  }
-  const msg = encodeURIComponent(`🍽️ I'd love to eat: ${dish.name}`);
-  const waBtn = document.getElementById('whatsapp-btn');
-  waBtn.href = `https://wa.me/491724382147?text=${msg}`;
-  const sentEl = document.getElementById('sent-message');
-  sentEl.style.display = 'none';
-  sentEl.textContent = '';
-  waBtn.onclick = () => {
-    setTimeout(() => { spawnHearts(); typewriter(sentEl, "alrighty I'll make it with love 😘🤌✨", 45); }, 300);
-  };
-  document.getElementById('confirm-bar').classList.remove('show');
-  showView('confirm');
-  setTimeout(spawnHearts, 400);
 }
 
 function surpriseMe() {
