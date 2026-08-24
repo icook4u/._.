@@ -504,6 +504,11 @@ function renderGrid() {
   }).join('');
 
   el.querySelectorAll('.dish-card:not(.unavailable)').forEach(card => {
+    card.addEventListener('animationend', () => {
+      card.style.opacity = '1';
+      card.style.animation = 'none';
+      card.style.transform = '';
+    });
     card.addEventListener('click', () => {
       selectDish(Number(card.dataset.id));
     });
